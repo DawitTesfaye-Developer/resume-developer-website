@@ -163,8 +163,8 @@ const EditForm: React.FC<EditFormProps> = ({ data, onChange }) => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-blue-600 text-white shadow-lg'
+      <div className="bg-white rounded-xl shadow-lg p-2 mb-8 overflow-x-auto">
+        <nav className="flex space-x-2 min-w-max">
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
@@ -173,14 +173,14 @@ const EditForm: React.FC<EditFormProps> = ({ data, onChange }) => {
                   {isActive && (
                     <motion.div
                       layoutId="activeFormTab"
-                      className="absolute inset-0 bg-blue-600 rounded-lg"
+                className={`relative flex items-center justify-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200 whitespace-nowrap ${
                       style={{ zIndex: -1 }}
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
                 </button>
-              );
-            })}
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-xs sm:text-sm lg:text-base">{tab.name}</span>
           </nav>
         </div>
 

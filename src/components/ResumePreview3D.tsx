@@ -241,7 +241,7 @@ const ResumePreview3D: React.FC<ResumePreview3DProps> = ({ data }) => {
   const { currentTheme } = useTheme();
   
   return (
-    <div className="w-full h-full relative bg-gradient-to-br from-gray-100 to-gray-200">
+    <div className="w-full h-full relative bg-gradient-to-br from-gray-100 to-gray-200 min-h-[400px] sm:min-h-[600px] lg:min-h-[800px]">
       <Suspense fallback={<LoadingFallback />}>
         <Canvas 
           camera={{ 
@@ -261,17 +261,19 @@ const ResumePreview3D: React.FC<ResumePreview3DProps> = ({ data }) => {
         </Canvas>
       </Suspense>
       
-      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-        <div className="text-sm text-gray-600 space-y-1">
+      <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 sm:p-3 shadow-lg">
+        <div className="text-xs sm:text-sm text-gray-600 space-y-1">
           <p className="flex items-center space-x-2">
             <span>🖱️</span>
-            <span>Drag to rotate</span>
+            <span className="hidden sm:inline">Drag to rotate</span>
+            <span className="sm:hidden">Drag</span>
           </p>
           <p className="flex items-center space-x-2">
             <span>🔍</span>
-            <span>Scroll to zoom</span>
+            <span className="hidden sm:inline">Scroll to zoom</span>
+            <span className="sm:hidden">Zoom</span>
           </p>
-          <p className="flex items-center space-x-2">
+          <p className="hidden sm:flex items-center space-x-2">
             <span>✋</span>
             <span>Right-click + drag to pan</span>
           </p>
@@ -279,9 +281,9 @@ const ResumePreview3D: React.FC<ResumePreview3DProps> = ({ data }) => {
       </div>
 
       {/* Debug info */}
-      <div className="absolute top-4 right-4 bg-black/70 text-white text-xs p-2 rounded">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-black/70 text-white text-xs p-2 rounded">
         <p>3D Preview Active</p>
-        <p>Theme: {currentTheme.name}</p>
+        <p className="hidden sm:block">Theme: {currentTheme.name}</p>
       </div>
     </div>
   );
