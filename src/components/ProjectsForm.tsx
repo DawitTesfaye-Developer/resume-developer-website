@@ -5,11 +5,12 @@ import { FolderOpen, Plus, Edit2, Trash2, Globe, Github, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProjectsFormProps {
-  data: Project[];
-  onChange: (data: Project[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const ProjectsForm: React.FC<ProjectsFormProps> = ({ data = [], onChange }) => {
+const ProjectsForm: React.FC<ProjectsFormProps> = ({ data, onChange }) => {
+  const projectsData = data.projects || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -25,24 +26,24 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ data = [], onChange }) => {
       id: Date.now().toString(),
       technologies: project.technologies || []
     };
-    onChange([...data, newProject]);
+    onChange({ projects: [...projectsData, newProject] });
     reset();
     setIsAdding(false);
   };
 
   const updateProject = (project: Project) => {
-    const updated = data.map(proj => 
+    const updated = projectsData.map(proj => 
       proj.id === editingId 
         ? { ...project, id: editingId, technologies: project.technologies || [] }
         : proj
     );
-    onChange(updated);
+    onChange({ projects: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteProject = (id: string) => {
-    onChange(data.filter(proj => proj.id !== id));
+    onChange({ projects: projectsData.filter(proj => proj.id !== id) });
   };
 
   const startEdit = (project: Project) => {
@@ -89,7 +90,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ data = [], onChange }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <AnimatePresence>
-          {data.map((project) => (
+          {projectsData.map((project) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 20 }}
@@ -257,7 +258,7 @@ const ProjectsForm: React.FC<ProjectsFormProps> = ({ data = [], onChange }) => {
         )}
       </AnimatePresence>
 
-      {data.length === 0 && !isAdding && (
+      {projectsData.length === 0 && !isAdding && (
         <div className="text-center py-8 text-gray-500">
           <FolderOpen className="w-12 h-12 mx-auto mb-4 text-gray-300" />
           <p>No projects added yet</p>

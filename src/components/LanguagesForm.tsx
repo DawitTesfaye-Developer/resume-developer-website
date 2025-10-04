@@ -5,11 +5,12 @@ import { Globe, Plus, Edit2, Trash2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LanguagesFormProps {
-  data: Language[];
-  onChange: (data: Language[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const LanguagesForm: React.FC<LanguagesFormProps> = ({ data = [], onChange }) => {
+const LanguagesForm: React.FC<LanguagesFormProps> = ({ data, onChange }) => {
+  const languagesData = data.languages || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -23,24 +24,24 @@ const LanguagesForm: React.FC<LanguagesFormProps> = ({ data = [], onChange }) =>
       id: Date.now().toString(),
       level: parseInt(language.level.toString())
     };
-    onChange([...data, newLanguage]);
+    onChange({ languages: [...languagesData, newLanguage] });
     reset();
     setIsAdding(false);
   };
 
   const updateLanguage = (language: Language) => {
-    const updated = data.map(lang => 
+    const updated = languagesData.map(lang => 
       lang.id === editingId 
         ? { ...language, id: editingId, level: parseInt(language.level.toString()) }
         : lang
     );
-    onChange(updated);
+    onChange({ languages: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteLanguage = (id: string) => {
-    onChange(data.filter(lang => lang.id !== id));
+    onChange({ languages: languagesData.filter(lang => lang.id !== id) });
   };
 
   const startEdit = (language: Language) => {
@@ -114,7 +115,7 @@ const LanguagesForm: React.FC<LanguagesFormProps> = ({ data = [], onChange }) =>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <AnimatePresence>
-          {data.map((language) => (
+          {languagesData.map((language) => (
             <motion.div
               key={language.id}
               initial={{ opacity: 0, scale: 0.9 }}

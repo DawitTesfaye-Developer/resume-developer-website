@@ -13,9 +13,7 @@ import ReferencesForm from './ReferencesForm';
 
 interface EditFormProps {
   data: ResumeData;
-  onChange: (data: ResumeData) => void;
-  activeSection: string;
-  onSectionChange: (section: string) => void;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
 const sections = [
@@ -31,7 +29,9 @@ const sections = [
   { id: 'references', label: 'References', icon: '📞' },
 ];
 
-const EditForm: React.FC<EditFormProps> = ({ data, onChange, activeSection, onSectionChange }) => {
+const EditForm: React.FC<EditFormProps> = ({ data, onChange }) => {
+  const [activeSection, setActiveSection] = React.useState('personal');
+
   const renderActiveSection = () => {
     switch (activeSection) {
       case 'personal':
@@ -67,7 +67,7 @@ const EditForm: React.FC<EditFormProps> = ({ data, onChange, activeSection, onSe
           {sections.map((section) => (
             <button
               key={section.id}
-              onClick={() => onSectionChange(section.id)}
+              onClick={() => setActiveSection(section.id)}
               className={`flex-shrink-0 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeSection === section.id
                   ? 'border-blue-500 text-blue-600 bg-white'

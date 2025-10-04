@@ -5,11 +5,12 @@ import { Heart, Plus, Edit2, Trash2, Calendar, MapPin, Building } from 'lucide-r
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface VolunteerFormProps {
-  data: VolunteerExperience[];
-  onChange: (data: VolunteerExperience[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const VolunteerForm: React.FC<VolunteerFormProps> = ({ data = [], onChange }) => {
+const VolunteerForm: React.FC<VolunteerFormProps> = ({ data, onChange }) => {
+  const volunteerData = data.volunteer || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -22,24 +23,24 @@ const VolunteerForm: React.FC<VolunteerFormProps> = ({ data = [], onChange }) =>
       id: Date.now().toString(),
       endDate: volunteer.current ? '' : volunteer.endDate
     };
-    onChange([...data, newVolunteer]);
+    onChange({ volunteer: [...volunteerData, newVolunteer] });
     reset();
     setIsAdding(false);
   };
 
   const updateVolunteer = (volunteer: VolunteerExperience) => {
-    const updated = data.map(vol => 
+    const updated = volunteerData.map(vol => 
       vol.id === editingId 
         ? { ...volunteer, id: editingId, endDate: volunteer.current ? '' : volunteer.endDate }
         : vol
     );
-    onChange(updated);
+    onChange({ volunteer: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteVolunteer = (id: string) => {
-    onChange(data.filter(vol => vol.id !== id));
+    onChange({ volunteer: volunteerData.filter(vol => vol.id !== id) });
   };
 
   const startEdit = (volunteer: VolunteerExperience) => {
@@ -82,7 +83,7 @@ const VolunteerForm: React.FC<VolunteerFormProps> = ({ data = [], onChange }) =>
       </div>
 
       <AnimatePresence>
-        {data.map((volunteer) => (
+        {volunteerData.map((volunteer) => (
           <motion.div
             key={volunteer.id}
             initial={{ opacity: 0, y: 20 }}

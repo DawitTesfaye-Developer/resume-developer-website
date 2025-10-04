@@ -5,11 +5,12 @@ import { Trophy, Plus, Edit2, Trash2, Calendar, Building } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AwardsFormProps {
-  data: Award[];
-  onChange: (data: Award[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const AwardsForm: React.FC<AwardsFormProps> = ({ data = [], onChange }) => {
+const AwardsForm: React.FC<AwardsFormProps> = ({ data, onChange }) => {
+  const awardsData = data.awards || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -20,24 +21,24 @@ const AwardsForm: React.FC<AwardsFormProps> = ({ data = [], onChange }) => {
       ...award,
       id: Date.now().toString()
     };
-    onChange([...data, newAward]);
+    onChange({ awards: [...awardsData, newAward] });
     reset();
     setIsAdding(false);
   };
 
   const updateAward = (award: Award) => {
-    const updated = data.map(a => 
+    const updated = awardsData.map(a => 
       a.id === editingId 
         ? { ...award, id: editingId }
         : a
     );
-    onChange(updated);
+    onChange({ awards: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteAward = (id: string) => {
-    onChange(data.filter(award => award.id !== id));
+    onChange({ awards: awardsData.filter(award => award.id !== id) });
   };
 
   const startEdit = (award: Award) => {
@@ -80,7 +81,7 @@ const AwardsForm: React.FC<AwardsFormProps> = ({ data = [], onChange }) => {
       </div>
 
       <AnimatePresence>
-        {data.map((award) => (
+        {awardsData.map((award) => (
           <motion.div
             key={award.id}
             initial={{ opacity: 0, y: 20 }}

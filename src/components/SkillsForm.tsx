@@ -5,11 +5,12 @@ import { Code, Plus, Edit2, Trash2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SkillsFormProps {
-  data: Skill[];
-  onChange: (data: Skill[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const SkillsForm: React.FC<SkillsFormProps> = ({ data = [], onChange }) => {
+const SkillsForm: React.FC<SkillsFormProps> = ({ data, onChange }) => {
+  const skillsData = data.skills || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -22,24 +23,24 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ data = [], onChange }) => {
       id: Date.now().toString(),
       level: parseInt(skill.level.toString())
     };
-    onChange([...data, newSkill]);
+    onChange({ skills: [...skillsData, newSkill] });
     reset();
     setIsAdding(false);
   };
 
   const updateSkill = (skill: Skill) => {
-    const updated = data.map(s => 
+    const updated = skillsData.map(s => 
       s.id === editingId 
         ? { ...skill, id: editingId, level: parseInt(skill.level.toString()) }
         : s
     );
-    onChange(updated);
+    onChange({ skills: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteSkill = (id: string) => {
-    onChange(data.filter(skill => skill.id !== id));
+    onChange({ skills: skillsData.filter(skill => skill.id !== id) });
   };
 
   const startEdit = (skill: Skill) => {
@@ -87,7 +88,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ data = [], onChange }) => {
   };
 
   const groupedSkills = skillCategories.reduce((acc, category) => {
-    acc[category] = data.filter(skill => skill.category === category);
+    acc[category] = skillsData.filter(skill => skill.category === category);
     return acc;
   }, {} as Record<string, Skill[]>);
 

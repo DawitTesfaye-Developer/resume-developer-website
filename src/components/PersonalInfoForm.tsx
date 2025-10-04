@@ -4,20 +4,20 @@ import { PersonalInfo } from '../types/resume';
 import { User, Mail, Phone, MapPin, Globe, Linkedin, Github } from 'lucide-react';
 
 interface PersonalInfoFormProps {
-  data: PersonalInfo;
-  onChange: (data: PersonalInfo) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ data, onChange }) => {
   const { register, watch } = useForm({
-    defaultValues: data,
+    defaultValues: data.personalInfo,
     mode: 'onChange'
   });
 
   const watchedData = watch();
 
   React.useEffect(() => {
-    onChange(watchedData as PersonalInfo);
+    onChange({ personalInfo: watchedData as PersonalInfo });
   }, [watchedData, onChange]);
 
   const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white";

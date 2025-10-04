@@ -5,11 +5,12 @@ import { GraduationCap, Plus, Edit2, Trash2, Calendar, MapPin, School } from 'lu
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface EducationFormProps {
-  data: Education[];
-  onChange: (data: Education[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const EducationForm: React.FC<EducationFormProps> = ({ data = [], onChange }) => {
+const EducationForm: React.FC<EducationFormProps> = ({ data, onChange }) => {
+  const educationData = data.education || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -20,24 +21,24 @@ const EducationForm: React.FC<EducationFormProps> = ({ data = [], onChange }) =>
       ...education,
       id: Date.now().toString()
     };
-    onChange([...data, newEducation]);
+    onChange({ education: [...educationData, newEducation] });
     reset();
     setIsAdding(false);
   };
 
   const updateEducation = (education: Education) => {
-    const updated = data.map(edu => 
+    const updated = educationData.map(edu => 
       edu.id === editingId 
         ? { ...education, id: editingId }
         : edu
     );
-    onChange(updated);
+    onChange({ education: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteEducation = (id: string) => {
-    onChange(data.filter(edu => edu.id !== id));
+    onChange({ education: educationData.filter(edu => edu.id !== id) });
   };
 
   const startEdit = (education: Education) => {
@@ -80,7 +81,7 @@ const EducationForm: React.FC<EducationFormProps> = ({ data = [], onChange }) =>
       </div>
 
       <AnimatePresence>
-        {data.map((education) => (
+        {educationData.map((education) => (
           <motion.div
             key={education.id}
             initial={{ opacity: 0, y: 20 }}

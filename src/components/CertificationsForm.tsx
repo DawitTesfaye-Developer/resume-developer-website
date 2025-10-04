@@ -5,11 +5,12 @@ import { Award, Plus, Edit2, Trash2, Calendar, ExternalLink, Shield } from 'luci
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CertificationsFormProps {
-  data: Certification[];
-  onChange: (data: Certification[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const CertificationsForm: React.FC<CertificationsFormProps> = ({ data = [], onChange }) => {
+const CertificationsForm: React.FC<CertificationsFormProps> = ({ data, onChange }) => {
+  const certificationsData = data.certifications || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -20,24 +21,24 @@ const CertificationsForm: React.FC<CertificationsFormProps> = ({ data = [], onCh
       ...certification,
       id: Date.now().toString()
     };
-    onChange([...data, newCertification]);
+    onChange({ certifications: [...certificationsData, newCertification] });
     reset();
     setIsAdding(false);
   };
 
   const updateCertification = (certification: Certification) => {
-    const updated = data.map(cert => 
+    const updated = certificationsData.map(cert => 
       cert.id === editingId 
         ? { ...certification, id: editingId }
         : cert
     );
-    onChange(updated);
+    onChange({ certifications: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteCertification = (id: string) => {
-    onChange(data.filter(cert => cert.id !== id));
+    onChange({ certifications: certificationsData.filter(cert => cert.id !== id) });
   };
 
   const startEdit = (certification: Certification) => {
@@ -80,7 +81,7 @@ const CertificationsForm: React.FC<CertificationsFormProps> = ({ data = [], onCh
       </div>
 
       <AnimatePresence>
-        {data.map((certification) => (
+        {certificationsData.map((certification) => (
           <motion.div
             key={certification.id}
             initial={{ opacity: 0, y: 20 }}

@@ -5,11 +5,12 @@ import { Briefcase, Plus, Edit2, Trash2, Calendar, MapPin, Building } from 'luci
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ExperienceFormProps {
-  data: Experience[];
-  onChange: (data: Experience[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const ExperienceForm: React.FC<ExperienceFormProps> = ({ data = [], onChange }) => {
+const ExperienceForm: React.FC<ExperienceFormProps> = ({ data, onChange }) => {
+  const experienceData = data.experience || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -22,24 +23,24 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({ data = [], onChange }) 
       id: Date.now().toString(),
       endDate: experience.current ? '' : experience.endDate
     };
-    onChange([...data, newExperience]);
+    onChange({ experience: [...experienceData, newExperience] });
     reset();
     setIsAdding(false);
   };
 
   const updateExperience = (experience: Experience) => {
-    const updated = data.map(exp => 
+    const updated = experienceData.map(exp => 
       exp.id === editingId 
         ? { ...experience, id: editingId, endDate: experience.current ? '' : experience.endDate }
         : exp
     );
-    onChange(updated);
+    onChange({ experience: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteExperience = (id: string) => {
-    onChange(data.filter(exp => exp.id !== id));
+    onChange({ experience: experienceData.filter(exp => exp.id !== id) });
   };
 
   const startEdit = (experience: Experience) => {
@@ -82,7 +83,7 @@ const ExperienceForm: React.FC<ExperienceFormProps> = ({ data = [], onChange }) 
       </div>
 
       <AnimatePresence>
-        {data.map((experience) => (
+        {experienceData.map((experience) => (
           <motion.div
             key={experience.id}
             initial={{ opacity: 0, y: 20 }}

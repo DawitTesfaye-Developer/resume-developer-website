@@ -5,11 +5,12 @@ import { Users, Plus, Edit2, Trash2, Mail, Phone, Building, User } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ReferencesFormProps {
-  data: Reference[];
-  onChange: (data: Reference[]) => void;
+  data: ResumeData;
+  onChange: (data: Partial<ResumeData>) => void;
 }
 
-const ReferencesForm: React.FC<ReferencesFormProps> = ({ data = [], onChange }) => {
+const ReferencesForm: React.FC<ReferencesFormProps> = ({ data, onChange }) => {
+  const referencesData = data.references || [];
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -20,24 +21,24 @@ const ReferencesForm: React.FC<ReferencesFormProps> = ({ data = [], onChange }) 
       ...reference,
       id: Date.now().toString()
     };
-    onChange([...data, newReference]);
+    onChange({ references: [...referencesData, newReference] });
     reset();
     setIsAdding(false);
   };
 
   const updateReference = (reference: Reference) => {
-    const updated = data.map(ref => 
+    const updated = referencesData.map(ref => 
       ref.id === editingId 
         ? { ...reference, id: editingId }
         : ref
     );
-    onChange(updated);
+    onChange({ references: updated });
     reset();
     setEditingId(null);
   };
 
   const deleteReference = (id: string) => {
-    onChange(data.filter(ref => ref.id !== id));
+    onChange({ references: referencesData.filter(ref => ref.id !== id) });
   };
 
   const startEdit = (reference: Reference) => {
@@ -81,7 +82,7 @@ const ReferencesForm: React.FC<ReferencesFormProps> = ({ data = [], onChange }) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <AnimatePresence>
-          {data.map((reference) => (
+          {referencesData.map((reference) => (
             <motion.div
               key={reference.id}
               initial={{ opacity: 0, y: 20 }}
@@ -219,7 +220,7 @@ const ReferencesForm: React.FC<ReferencesFormProps> = ({ data = [], onChange }) 
         )}
       </AnimatePresence>
 
-      {data.length === 0 && !isAdding && (
+      {referencesData.length === 0 && !isAdding && (
         <div className="text-center py-8 text-gray-500">
           <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
           <p>No references added yet</p>
