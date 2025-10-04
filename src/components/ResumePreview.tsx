@@ -26,11 +26,16 @@ import {
 
 interface ResumePreviewProps {
   data: ResumeData;
-  template: Template;
-  theme: Theme;
 }
 
-const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) => {
+const ResumePreview: React.FC<ResumePreviewProps> = ({ data }) => {
+  // Default theme colors
+  const theme = {
+    primary: '#2563eb',
+    secondary: '#1e40af',
+    accent: '#3b82f6'
+  };
+
   const renderStars = (level: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -92,9 +97,8 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
     );
   };
 
-  if (template.id === 'modern') {
-    return (
-      <div className="bg-white shadow-2xl rounded-lg overflow-hidden max-w-4xl mx-auto">
+  return (
+    <div id="resume-preview" className="bg-white shadow-2xl rounded-lg overflow-hidden max-w-4xl mx-auto">
         {/* Header */}
         <div 
           className="relative p-6 sm:p-8 lg:p-12 text-white"
@@ -110,11 +114,8 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
           
           <div className="relative z-10">
             <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-2 sm:mb-4">
-              {data.personalInfo.fullName}
+              {`${data.personalInfo.firstName} ${data.personalInfo.lastName}`.trim() || 'Your Name'}
             </h1>
-            <p className="text-lg sm:text-xl lg:text-2xl opacity-90 mb-4 sm:mb-6">
-              {data.personalInfo.title}
-            </p>
             
             {/* Contact Info */}
             <div className="flex flex-wrap gap-2 sm:gap-4">
@@ -192,7 +193,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                             <div className="flex items-center mt-1 sm:mt-0">
                               <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-gray-500" />
                               <span className="text-xs sm:text-sm bg-gray-100 px-2 py-1 rounded-full text-gray-600">
-                                {exp.startDate} - {exp.endDate}
+                                {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
                               </span>
                             </div>
                           </div>
@@ -227,9 +228,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                           )}
                         </div>
                         <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{project.description}</p>
-                        {project.technologies && (
+                        {project.technologies && project.technologies.length > 0 && (
                           <div className="flex flex-wrap gap-1 sm:gap-2">
-                            {project.technologies.split(',').map((tech, techIndex) => (
+                            {project.technologies.map((tech, techIndex) => (
                               <span 
                                 key={techIndex} 
                                 className="px-2 py-1 text-xs sm:text-sm rounded-full border"
@@ -239,7 +240,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                                   backgroundColor: `${theme.primary}10`
                                 }}
                               >
-                                {tech.trim()}
+                                {tech}
                               </span>
                             ))}
                           </div>
@@ -261,9 +262,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                     {data.education.map((edu, index) => (
                       <div key={index} className="bg-white rounded-xl p-4 sm:p-6 shadow-md">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
-                          <h3 className="text-lg sm:text-xl font-bold text-gray-800">{edu.degree}</h3>
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-800">{edu.degree} in {edu.field}</h3>
                           <span className="text-xs sm:text-sm bg-gray-100 px-2 py-1 rounded-full text-gray-600 mt-1 sm:mt-0">
-                            {edu.graduationDate}
+                            {edu.endDate}
                           </span>
                         </div>
                         <p className="text-sm sm:text-base font-medium text-gray-600 mb-1">{edu.institution}</p>
@@ -321,7 +322,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                     {data.languages.map((lang, index) => (
                       <div key={index} className="bg-white rounded-xl p-4 sm:p-5 shadow-md">
                         <div className="flex justify-between items-center mb-2">
-                          <h3 className="text-sm sm:text-base font-semibold text-gray-800">{lang.language}</h3>
+                          <h3 className="text-sm sm:text-base font-semibold text-gray-800">{lang.name}</h3>
                           <span className="text-xs sm:text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
                             {lang.proficiency}
                           </span>
@@ -338,9 +339,9 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
                   <div className="space-y-3 sm:space-y-4">
                     {data.volunteer.map((vol, index) => (
                       <div key={index} className="bg-white rounded-xl p-4 sm:p-5 shadow-md">
-                        <h3 className="text-sm sm:text-base font-semibold text-gray-800">{vol.role}</h3>
+                        <h3 className="text-sm sm:text-base font-semibold text-gray-800">{vol.position}</h3>
                         <p className="text-xs sm:text-sm text-gray-600">{vol.organization}</p>
-                        <p className="text-xs text-gray-500 mt-1">{vol.startDate} - {vol.endDate}</p>
+                        <p className="text-xs text-gray-500 mt-1">{vol.startDate} - {vol.current ? 'Present' : vol.endDate}</p>
                         {vol.description && (
                           <p className="text-xs sm:text-sm text-gray-700 mt-2">{vol.description}</p>
                         )}
@@ -395,164 +396,6 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ data, template, theme }) 
         </div>
       </div>
     );
-  }
-
-  // Default/Classic template
-  return (
-    <div className="bg-white shadow-lg max-w-4xl mx-auto p-6 sm:p-8 lg:p-12">
-      {/* Header */}
-      <div className="text-center mb-8 sm:mb-12">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4" style={{ color: theme.primary }}>
-          {data.personalInfo.fullName}
-        </h1>
-        <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-4 sm:mb-6">
-          {data.personalInfo.title}
-        </p>
-        
-        {/* Contact Info */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm sm:text-base text-gray-600">
-          {data.personalInfo.email && (
-            <div className="flex items-center">
-              <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              {data.personalInfo.email}
-            </div>
-          )}
-          {data.personalInfo.phone && (
-            <div className="flex items-center">
-              <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              {data.personalInfo.phone}
-            </div>
-          )}
-          {data.personalInfo.location && (
-            <div className="flex items-center">
-              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              {data.personalInfo.location}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Summary */}
-      {data.personalInfo.summary && (
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4" style={{ color: theme.primary }}>
-            Professional Summary
-          </h2>
-          <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-            {data.personalInfo.summary}
-          </p>
-        </div>
-      )}
-
-      {/* Experience */}
-      {data.experience.length > 0 && (
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" style={{ color: theme.primary }}>
-            Experience
-          </h2>
-          <div className="space-y-4 sm:space-y-6">
-            {data.experience.map((exp, index) => (
-              <div key={index} className="border-l-4 pl-4 sm:pl-6" style={{ borderColor: theme.primary }}>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
-                  <h3 className="text-lg sm:text-xl font-semibold">{exp.position}</h3>
-                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0">
-                    {exp.startDate} - {exp.endDate}
-                  </span>
-                </div>
-                <p className="text-sm sm:text-base font-medium text-gray-600 mb-2">{exp.company}</p>
-                <p className="text-sm sm:text-base text-gray-700">{exp.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Education */}
-      {data.education.length > 0 && (
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" style={{ color: theme.primary }}>
-            Education
-          </h2>
-          <div className="space-y-3 sm:space-y-4">
-            {data.education.map((edu, index) => (
-              <div key={index}>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
-                  <h3 className="text-base sm:text-lg font-semibold">{edu.degree}</h3>
-                  <span className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0">
-                    {edu.graduationDate}
-                  </span>
-                </div>
-                <p className="text-sm sm:text-base text-gray-600">{edu.institution}</p>
-                {edu.gpa && (
-                  <p className="text-sm text-gray-500">GPA: {edu.gpa}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Skills */}
-      {data.skills.length > 0 && (
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" style={{ color: theme.primary }}>
-            Skills
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {data.skills.map((skill, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-sm sm:text-base font-medium">{skill.name}</span>
-                <div className="flex space-x-1">
-                  {renderStars(skill.level)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Projects */}
-      {data.projects.length > 0 && (
-        <div className="mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6" style={{ color: theme.primary }}>
-            Projects
-          </h2>
-          <div className="space-y-4 sm:space-y-6">
-            {data.projects.map((project, index) => (
-              <div key={index}>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2">
-                  <h3 className="text-base sm:text-lg font-semibold">{project.name}</h3>
-                  {project.url && (
-                    <a 
-                      href={project.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm mt-1 sm:mt-0"
-                    >
-                      View Project
-                    </a>
-                  )}
-                </div>
-                <p className="text-sm sm:text-base text-gray-700 mb-2">{project.description}</p>
-                {project.technologies && (
-                  <div className="flex flex-wrap gap-1 sm:gap-2">
-                    {project.technologies.split(',').map((tech, techIndex) => (
-                      <span 
-                        key={techIndex} 
-                        className="px-2 py-1 text-xs bg-gray-100 rounded"
-                      >
-                        {tech.trim()}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
 };
 
 export default ResumePreview;
