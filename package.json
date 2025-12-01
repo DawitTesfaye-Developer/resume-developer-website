@@ -18,7 +18,7 @@
     "three": "^0.160.0",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1",
-    "react-hook-form": "^7.48.2",
+    "react-hook-form": "^7.66.0",
     "framer-motion": "^10.16.16"
   },
   "devDependencies": {
